@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_recipesListFragment_to_recipeInfoFragment"
             app:destination="@id/recipeInfoFragment" />
+        <action
+            android:id="@+id/action_recipesListFragment_to_bottomSheetSettingsFragment"
+            app:destination="@id/bottomSheetSettingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/recipeInfoFragment"
@@ -26,4 +29,15 @@
             android:name="id"
             app:argType="string" />
     </fragment>
+    <dialog
+        android:id="@+id/bottomSheetSettingsFragment"
+        android:name="com.example.recipeskode.presentation.recipeslist.bottomsheet.BottomSheetSettingsFragment"
+        android:label="fragment_bottom_sheet_settings"
+        tools:layout="@layout/fragment_bottom_sheet_settings" >
+        <action
+            android:id="@+id/action_bottomSheetSettingsFragment_to_recipesListFragment"
+            app:destination="@id/recipesListFragment"
+            app:popUpTo="@id/recipesListFragment"
+            app:popUpToInclusive="true"/>
+    </dialog>
 </navigation>
