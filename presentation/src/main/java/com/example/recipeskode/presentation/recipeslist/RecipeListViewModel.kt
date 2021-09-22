@@ -25,18 +25,8 @@ class RecipeListViewModel(
         MutableLiveData()
     var recipes: LiveData<ArrayList<Recipe>> = _recipes
 
-    private var _internetError= SingleLiveEvent<Boolean>()
-    var internetError: LiveData<Boolean> = _internetError
-
-    private var _apiError= SingleLiveEvent<Boolean>()
-    var apiError: LiveData<Boolean> = _apiError
-
-    private var _noError = SingleLiveEvent<Boolean>()
-    var noError: LiveData<Boolean> = _noError
-
     private var sortOption = SortOptions.BY_NAME
     private var searchWord = ""
-    private var isError = false
     private lateinit var recipesList : ArrayList<Recipe>
 
     init {
