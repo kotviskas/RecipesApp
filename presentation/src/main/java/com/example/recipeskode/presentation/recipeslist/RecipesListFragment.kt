@@ -104,7 +104,8 @@ class RecipesListFragment : Fragment(R.layout.fragment_recipes_list),
     }
 
     override fun itemClick(recipe: Recipe) {
-        TODO("Not yet implemented")
+        val action = RecipesListFragmentDirections.actionRecipesListFragmentToRecipeInfoFragment(recipe.uuid)
+        findNavController().navigate(action)
     }
 
     override fun onQueryTextSubmit(p0: String?): Boolean {

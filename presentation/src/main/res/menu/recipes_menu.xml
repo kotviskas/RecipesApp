@@ -16,6 +16,6 @@
         android:iconTint="#757575"
         android:title="@string/settings"
         app:showAsAction="ifRoom"
-        />
+        tools:targetApi="o"/>
 
 </menu>
