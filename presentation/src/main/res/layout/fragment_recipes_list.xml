@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="api_error"
             type="Boolean" />
@@ -61,10 +62,10 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
-                android:backgroundTint="@color/background"
                 android:text="refresh"
                 android:textColor="@color/blue"
                 android:textSize="14sp"
+                app:backgroundTint="#F2F2F2"
                 app:cornerRadius="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

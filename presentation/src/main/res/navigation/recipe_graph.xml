@@ -28,6 +28,9 @@
         <argument
             android:name="id"
             app:argType="string" />
+        <action
+            android:id="@+id/action_recipeInfoFragment_to_recipePhotoFragment"
+            app:destination="@id/recipePhotoFragment" />
     </fragment>
     <dialog
         android:id="@+id/bottomSheetSettingsFragment"
@@ -40,4 +43,13 @@
             app:popUpTo="@id/recipesListFragment"
             app:popUpToInclusive="true"/>
     </dialog>
+    <fragment
+        android:id="@+id/recipePhotoFragment"
+        android:name="com.example.recipeskode.presentation.photo.RecipePhotoFragment"
+        android:label="fragment_recipe_photo"
+        tools:layout="@layout/fragment_recipe_photo" >
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
 </navigation>

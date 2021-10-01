@@ -25,8 +25,10 @@ class RecipeInfoViewModel(
 
     fun getRecipe(uuid: String) {
         viewModelScope.launch {
-            _recipe.value = getRecipeSafeCall(uuid)
-            getSimilarRecipesPhotos()
+            if (getRecipeSafeCall(uuid) != null) {
+                _recipe.value = getRecipeSafeCall(uuid)
+                getSimilarRecipesPhotos()
+            }
         }
     }
 
@@ -39,7 +41,9 @@ class RecipeInfoViewModel(
                     it.images = newSimilarRecipe.images
                 }
             }
-            _recipe.value = newRecipe!!
+            if (newRecipe != null) {
+                _recipe.value = newRecipe!!
+            }
         }
     }
 
@@ -60,7 +64,7 @@ class RecipeInfoViewModel(
                             _noError.call()
                             isError = false
                         }
-                        return result.data!!
+                        return result.data
                     }
                 }
             }

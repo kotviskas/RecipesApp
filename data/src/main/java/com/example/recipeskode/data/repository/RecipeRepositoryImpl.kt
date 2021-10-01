@@ -18,6 +18,9 @@ import com.example.recipeskode.domain.repository.RecipeRepository
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class RecipeRepositoryImpl(private val repoApi: RepoApi) : RecipeRepository {
@@ -25,6 +28,9 @@ class RecipeRepositoryImpl(private val repoApi: RepoApi) : RecipeRepository {
     override suspend fun getRecipeList(): Result<ArrayList<Recipe>> {
         val recipes: Result<ArrayList<Recipe>> = try {
             val newRecipes = repoApi.getRecipesList()
+            newRecipes.recipes.forEach {
+                it.lastUpdated = convertUnixToTime(it.lastUpdated.toLong())
+            }
             Result.Success(newRecipes.recipes)
         } catch (e: Exception) {
             Log.d("Error while get recipes", e.message.toString())
@@ -65,6 +71,8 @@ class RecipeRepositoryImpl(private val repoApi: RepoApi) : RecipeRepository {
     override suspend fun getRecipeInfo(uuid: String): Result<RecipeDetails> {
         val recipe = try {
             val newRecipe = repoApi.getRecipe(uuid)
+            newRecipe.recipe.instructions = newRecipe.recipe.instructions.replace("<br>", "\n")
+            newRecipe.recipe.lastUpdated = convertUnixToTime(newRecipe.recipe.lastUpdated.toLong())
             Result.Success(newRecipe.recipe)
         } catch (e: java.lang.Exception) {
             Log.d("Error while get recipe", e.message.toString())
@@ -110,5 +118,10 @@ class RecipeRepositoryImpl(private val repoApi: RepoApi) : RecipeRepository {
         return true
     }
 
+    private fun convertUnixToTime(time: Long): String {
+        val date = Date(time*1000)
+        val format = SimpleDateFormat("dd.MM.yyyy")
+        return format.format(date)
+    }
 
 }
