@@ -12,7 +12,7 @@ data class Recipe(
     @SerializedName("instructions")
     val instructions: String?,
     @SerializedName("lastUpdated")
-    val lastUpdated: String,
+    var lastUpdated: String,
     @SerializedName("name")
     val name: String,
     @SerializedName("uuid")

@@ -1,5 +1,6 @@
 package com.example.recipeskode.di
 
+import com.example.recipeskode.presentation.photo.RecipePhotoViewModel
 import com.example.recipeskode.presentation.recipeinfo.RecipeInfoViewModel
 import com.example.recipeskode.presentation.recipeslist.RecipeListViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -12,9 +13,9 @@ val viewModelModule = module {
     viewModel {
         RecipeInfoViewModel(get(), get(), get())
     }
-//    viewModel {
-//        RecipePhotoViewModel(get())
-//    }
+    viewModel {
+        RecipePhotoViewModel(get(), get())
+    }
 }
 
 

@@ -3,6 +3,7 @@ package com.example.recipeskode.presentation.recipeslist
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,13 +23,17 @@ class RecipesListFragment : Fragment(R.layout.fragment_recipes_list),
     private var adapterRecipe = RecipesRecyclerAdapter(ArrayList(), this)
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRecipesListBinding.inflate(inflater, container, false)
-
         setHasOptionsMenu(true)
+
         viewModel.recipes.observe(viewLifecycleOwner, { result ->
             adapterRecipe.update(result)
         })
@@ -57,11 +62,11 @@ class RecipesListFragment : Fragment(R.layout.fragment_recipes_list),
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.recipes_menu, menu)
+
         val search = menu.findItem(R.id.menu_search)
         val searchView = search.actionView as? SearchView
-        //searchView?.isSubmitButtonEnabled = true
         searchView?.setOnQueryTextListener(this)
-
+        searchView?.setQuery(viewModel.searchWord.value, false)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -104,7 +109,8 @@ class RecipesListFragment : Fragment(R.layout.fragment_recipes_list),
     }
 
     override fun itemClick(recipe: Recipe) {
-        val action = RecipesListFragmentDirections.actionRecipesListFragmentToRecipeInfoFragment(recipe.uuid)
+        val action =
+            RecipesListFragmentDirections.actionRecipesListFragmentToRecipeInfoFragment(recipe.uuid)
         findNavController().navigate(action)
     }
 

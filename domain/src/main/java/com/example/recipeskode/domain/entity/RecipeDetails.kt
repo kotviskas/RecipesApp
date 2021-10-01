@@ -11,9 +11,9 @@ data class RecipeDetails(
     @SerializedName("images")
     val images: ArrayList<String>,
     @SerializedName("instructions")
-    val instructions: String,
+    var instructions: String,
     @SerializedName("lastUpdated")
-    val lastUpdated: String,
+    var lastUpdated: String,
     @SerializedName("name")
     val name: String,
     @SerializedName("similar")

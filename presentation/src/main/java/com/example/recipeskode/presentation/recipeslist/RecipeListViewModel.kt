@@ -12,7 +12,6 @@ import com.example.recipeskode.domain.usecase.CheckInternetConnectionUseCase
 import com.example.recipeskode.domain.usecase.GetRecipeListParams
 import com.example.recipeskode.domain.usecase.GetRecipeListUseCaseSuspend
 import com.example.recipeskode.presentation.base.BaseViewModel
-import com.example.recipeskode.presentation.base.SingleLiveEvent
 import kotlinx.coroutines.launch
 
 class RecipeListViewModel(
@@ -23,11 +22,12 @@ class RecipeListViewModel(
 
     private var _recipes: MutableLiveData<ArrayList<Recipe>> =
         MutableLiveData()
-    var recipes: LiveData<ArrayList<Recipe>> = _recipes
+    val recipes: LiveData<ArrayList<Recipe>> = _recipes
 
     private var sortOption = SortOptions.BY_NAME
-    private var searchWord = ""
-    private lateinit var recipesList : ArrayList<Recipe>
+    private var _searchWord: MutableLiveData<String> = MutableLiveData()
+    val searchWord = _searchWord
+    private var recipesList: ArrayList<Recipe> = ArrayList()
 
     init {
         getRecipeList()
@@ -49,7 +49,7 @@ class RecipeListViewModel(
         viewModelScope.launch {
             getRecipeListSafeCall()
             sortRecipe()
-            searchRecipe(searchWord)
+            _searchWord.value?.let { searchRecipe(it) }
         }
     }
 
@@ -61,18 +61,22 @@ class RecipeListViewModel(
         }
     }
 
-    fun searchAndSortRecipesList(text: String){
-        searchWord = text
-        searchRecipe(searchWord)
+    fun searchAndSortRecipesList(text: String) {
+        if (text != "") {
+            _searchWord.value = text
+        }
+        searchRecipe(text)
         sortRecipe()
     }
 
+
     private fun searchRecipe(text: String) {
         _recipes.value = recipesList.filter {
-            it.name.contains(searchWord, true)
-                    || it.description?.contains(searchWord, true) ?: false
-                    || it.instructions?.contains(searchWord, true) ?: false
+            it.name.contains(text, true)
+                    || it.description?.contains(text, true) ?: false
+                    || it.instructions?.contains(text, true) ?: false
         } as ArrayList<Recipe>
+
     }
 
     private suspend fun getRecipeListSafeCall() {
