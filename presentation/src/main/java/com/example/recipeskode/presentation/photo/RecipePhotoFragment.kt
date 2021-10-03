@@ -1,12 +1,15 @@
 package com.example.recipeskode.presentation.photo
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import com.example.recipeskode.presentation.R
 import com.example.recipeskode.presentation.databinding.FragmentRecipePhotoBinding
 import com.squareup.picasso.Picasso
@@ -33,7 +36,7 @@ class RecipePhotoFragment : Fragment(R.layout.fragment_recipe_photo) {
     ): View {
         _binding = FragmentRecipePhotoBinding.inflate(inflater, container, false)
         binding.btnSavePhoto.setOnClickListener {
-            viewModel.saveImage(binding.imageSavePhoto.drawable.toBitmap(), requireActivity())
+            saveImage(binding.imageSavePhoto.drawable.toBitmap())
         }
         return binding.root
     }
@@ -41,5 +44,27 @@ class RecipePhotoFragment : Fragment(R.layout.fragment_recipe_photo) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Picasso.get().load(url).into(binding.imageSavePhoto)
+    }
+
+    private fun saveImage(bitmap: Bitmap) {
+        try {
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ), 2
+                )
+            } else {
+                viewModel.saveImage(bitmap)
+            }
+        } catch (e: Exception) {
+            //ошибка
+        }
     }
 }

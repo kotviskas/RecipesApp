@@ -1,5 +1,6 @@
 package com.example.recipeskode.di
 
+import com.example.recipeskode.BuildConfig
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -22,7 +23,7 @@ val retrofitModule = module {
 
     fun provideRetrofit(factory: Gson, client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://test.kode-t.ru/")
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(factory))
             .client(client)
             .build()

@@ -3,14 +3,11 @@ package com.example.recipeskode.data.repository
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
-import android.graphics.Bitmap
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import com.example.recipeskode.data.network.RepoApi
+import com.example.recipeskode.data.network.RecipeRepoApi
 import com.example.recipeskode.domain.base.Result
 import com.example.recipeskode.domain.entity.Recipe
 import com.example.recipeskode.domain.entity.RecipeDetails
@@ -20,13 +17,13 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
-class RecipeRepositoryImpl(private val repoApi: RepoApi) : RecipeRepository {
+class RecipeRepositoryImpl(private val repoApi: RecipeRepoApi, private val context: Context) :
+    RecipeRepository {
 
-    override suspend fun getRecipeList(): Result<ArrayList<Recipe>> {
-        val recipes: Result<ArrayList<Recipe>> = try {
+    override suspend fun getRecipeList(): Result<List<Recipe>> {
+        val recipes: Result<List<Recipe>> = try {
             val newRecipes = repoApi.getRecipesList()
             newRecipes.recipes.forEach {
                 it.lastUpdated = convertUnixToTime(it.lastUpdated.toLong())
@@ -37,35 +34,6 @@ class RecipeRepositoryImpl(private val repoApi: RepoApi) : RecipeRepository {
             Result.Error("Api problem")
         }
         return recipes
-    }
-
-    override fun hasInternetConnection(context: Context?): Boolean {
-        if (context == null) return false
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val capabilities =
-                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-            if (capabilities != null) {
-                when {
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
-                        return true
-                    }
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
-                        return true
-                    }
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
-                        return true
-                    }
-                }
-            }
-        } else {
-            val activeNetworkInfo = connectivityManager.activeNetworkInfo
-            if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
-                return true
-            }
-        }
-        return false
     }
 
     override suspend fun getRecipeInfo(uuid: String): Result<RecipeDetails> {
@@ -81,7 +49,7 @@ class RecipeRepositoryImpl(private val repoApi: RepoApi) : RecipeRepository {
         return recipe
     }
 
-    override fun saveImage(bitmap: Bitmap, context: Context) : Boolean{
+    override fun saveImage(byteArray: ByteArray): Boolean {
         val fOs: OutputStream?
         val name = "${System.currentTimeMillis()}.jpg"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -97,7 +65,7 @@ class RecipeRepositoryImpl(private val repoApi: RepoApi) : RecipeRepository {
                     contentValues
                 )!!
             )
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOs)
+            fOs?.write(byteArray)
         } else {
             val file = File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
@@ -105,7 +73,7 @@ class RecipeRepositoryImpl(private val repoApi: RepoApi) : RecipeRepository {
                 "$name.png"
             )
             fOs = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOs)
+            fOs.write(byteArray)
             MediaStore.Images.Media.insertImage(
                 context.contentResolver,
                 file.absolutePath,
@@ -119,7 +87,7 @@ class RecipeRepositoryImpl(private val repoApi: RepoApi) : RecipeRepository {
     }
 
     private fun convertUnixToTime(time: Long): String {
-        val date = Date(time*1000)
+        val date = Date(time * 1000)
         val format = SimpleDateFormat("dd.MM.yyyy")
         return format.format(date)
     }

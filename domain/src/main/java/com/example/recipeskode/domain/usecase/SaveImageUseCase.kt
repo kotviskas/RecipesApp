@@ -1,14 +1,13 @@
 package com.example.recipeskode.domain.usecase
 
-import android.content.Context
-import android.graphics.Bitmap
-import com.example.recipeskode.domain.base.BaseUseCase
+import com.example.recipeskode.domain.base.UseCase
 import com.example.recipeskode.domain.repository.RecipeRepository
 
-class SaveImageUseCase(private val recipeRepository: RecipeRepository):BaseUseCase<Boolean,SaveImageParams > {
+class SaveImageUseCase(private val recipeRepository: RecipeRepository) :
+    UseCase<Boolean, SaveImageParams> {
     override fun invoke(params: SaveImageParams): Boolean {
-        return recipeRepository.saveImage(params.bitmap,params.context)
+        return recipeRepository.saveImage(params.byteArray)
     }
 }
 
-class SaveImageParams(val bitmap: Bitmap, val context: Context)
+class SaveImageParams(val byteArray: ByteArray)

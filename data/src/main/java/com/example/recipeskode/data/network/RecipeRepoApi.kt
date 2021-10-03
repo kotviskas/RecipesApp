@@ -1,10 +1,11 @@
 package com.example.recipeskode.data.network
 
-import com.example.recipeskode.data.network.dto.RecipeDetailsDTO
 import com.example.recipeskode.data.network.dto.RecipeDTO
-import retrofit2.http.*
+import com.example.recipeskode.data.network.dto.RecipeDetailsDTO
+import retrofit2.http.GET
+import retrofit2.http.Path
 
-interface RepoApi {
+interface RecipeRepoApi {
 
     @GET("/recipes")
     suspend fun getRecipesList(): RecipeDTO

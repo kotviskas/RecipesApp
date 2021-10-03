@@ -6,8 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.recipeskode.domain.base.Result
 import com.example.recipeskode.domain.entity.RecipeDetails
-import com.example.recipeskode.domain.usecase.CheckInternetConnectionParams
-import com.example.recipeskode.domain.usecase.CheckInternetConnectionUseCase
 import com.example.recipeskode.domain.usecase.GetRecipeInfoParams
 import com.example.recipeskode.domain.usecase.GetRecipeInfoUseCaseSuspend
 import com.example.recipeskode.presentation.base.BaseViewModel
@@ -15,7 +13,6 @@ import kotlinx.coroutines.launch
 
 class RecipeInfoViewModel(
     private val getRecipeInfoUseCaseSuspend: GetRecipeInfoUseCaseSuspend,
-    private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase,
     private val application: Application
 ) : BaseViewModel() {
 
@@ -42,17 +39,13 @@ class RecipeInfoViewModel(
                 }
             }
             if (newRecipe != null) {
-                _recipe.value = newRecipe!!
+                _recipe.value = newRecipe
             }
         }
     }
 
-    private fun hasInternetConnection(): Boolean {
-        return checkInternetConnectionUseCase.invoke(CheckInternetConnectionParams(application))
-    }
-
     private suspend fun getRecipeSafeCall(uuid: String): RecipeDetails? {
-        if (hasInternetConnection()) {
+        if (hasInternetConnection(application)) {
             when (val result = getRecipeInfoUseCaseSuspend.invoke(GetRecipeInfoParams(uuid))) {
                 is Result.Error -> {
                     _apiError.call()

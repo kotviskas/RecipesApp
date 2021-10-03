@@ -1,40 +1,17 @@
 package com.example.recipeskode.presentation.photo
 
-import android.Manifest
-import android.app.Activity
-import android.app.Application
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import androidx.core.app.ActivityCompat
 import com.example.recipeskode.domain.usecase.SaveImageParams
 import com.example.recipeskode.domain.usecase.SaveImageUseCase
 import com.example.recipeskode.presentation.base.BaseViewModel
+import java.io.ByteArrayOutputStream
 
-class RecipePhotoViewModel(private val saveImageUseCase: SaveImageUseCase, private val application: Application): BaseViewModel() {
+class RecipePhotoViewModel(private val saveImageUseCase: SaveImageUseCase) : BaseViewModel() {
 
-    private fun saveImage(bitmap: Bitmap){
-        saveImageUseCase.invoke(SaveImageParams(bitmap,application))
-    }
-
-    fun saveImage(bitmap: Bitmap, activity: Activity){
-        try {
-            if (ActivityCompat.checkSelfPermission(
-                    application,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    activity,
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ), 2
-                )
-            } else {
-                saveImage(bitmap)
-            }
-        } catch (e: Exception) {
-            //ошибка
-        }
+    fun saveImage(bitmap: Bitmap) {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        val image = stream.toByteArray()
+        saveImageUseCase.invoke(SaveImageParams(image))
     }
 }

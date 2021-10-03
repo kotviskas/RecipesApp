@@ -7,8 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.recipeskode.domain.base.Result
 import com.example.recipeskode.domain.base.SortOptions
 import com.example.recipeskode.domain.entity.Recipe
-import com.example.recipeskode.domain.usecase.CheckInternetConnectionParams
-import com.example.recipeskode.domain.usecase.CheckInternetConnectionUseCase
 import com.example.recipeskode.domain.usecase.GetRecipeListParams
 import com.example.recipeskode.domain.usecase.GetRecipeListUseCaseSuspend
 import com.example.recipeskode.presentation.base.BaseViewModel
@@ -16,7 +14,6 @@ import kotlinx.coroutines.launch
 
 class RecipeListViewModel(
     private val getRecipeListUseCase: GetRecipeListUseCaseSuspend,
-    private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase,
     private val application: Application
 ) : BaseViewModel() {
 
@@ -39,10 +36,6 @@ class RecipeListViewModel(
 
     fun setOptionByDate() {
         sortOption = SortOptions.BY_DATE
-    }
-
-    private fun hasInternetConnection(): Boolean {
-        return checkInternetConnectionUseCase.invoke(CheckInternetConnectionParams(application))
     }
 
     fun getRecipeList() {
@@ -80,7 +73,7 @@ class RecipeListViewModel(
     }
 
     private suspend fun getRecipeListSafeCall() {
-        if (hasInternetConnection()) {
+        if (hasInternetConnection(application)) {
             when (val result = getRecipeListUseCase.invoke(GetRecipeListParams())) {
                 is Result.Error -> {
                     _apiError.call()
@@ -88,7 +81,7 @@ class RecipeListViewModel(
                 }
                 else -> {
                     if (result.data != null) {
-                        recipesList = result.data!!
+                        recipesList = (result.data as ArrayList<Recipe>?)!!
                         _recipes.value = recipesList
                         if (isError) {
                             _noError.call()
