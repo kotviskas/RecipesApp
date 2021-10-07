@@ -13,5 +13,6 @@ class RecipePhotoViewModel(private val saveImageUseCase: SaveImageUseCase) : Bas
         bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
         val image = stream.toByteArray()
         saveImageUseCase.invoke(SaveImageParams(image))
+        bitmap.recycle()
     }
 }

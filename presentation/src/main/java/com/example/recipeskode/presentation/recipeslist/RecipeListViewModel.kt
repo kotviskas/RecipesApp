@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.recipeskode.domain.base.Result
 import com.example.recipeskode.domain.base.SortOptions
 import com.example.recipeskode.domain.entity.Recipe
 import com.example.recipeskode.domain.usecase.GetRecipeListParams
@@ -74,24 +73,19 @@ class RecipeListViewModel(
 
     private suspend fun getRecipeListSafeCall() {
         if (hasInternetConnection(application)) {
-            when (val result = getRecipeListUseCase.invoke(GetRecipeListParams())) {
-                is Result.Error -> {
-                    _apiError.call()
-                    isError = true
-                }
-                else -> {
-                    if (result.data != null) {
-                        recipesList = (result.data as ArrayList<Recipe>?)!!
-                        _recipes.value = recipesList
-                        if (isError) {
-                            _noError.call()
-                            isError = false
-                        }
-
-                    }
+            val result = getRecipeListUseCase.invoke(GetRecipeListParams())
+            result.onFailure {
+                _apiError.call()
+                isError = true
+            }
+            result.onSuccess {
+                recipesList = result.getOrDefault(ArrayList())
+                _recipes.value = recipesList
+                if (isError) {
+                    _noError.call()
+                    isError = false
                 }
             }
-
         } else {
             _internetError.call()
             isError = true

@@ -22,18 +22,18 @@ import java.util.*
 class RecipeRepositoryImpl(private val repoApi: RecipeRepoApi, private val context: Context) :
     RecipeRepository {
 
-    override suspend fun getRecipeList(): Result<List<Recipe>> {
-        val recipes: Result<List<Recipe>> = try {
+    override suspend fun getRecipeList(): kotlin.Result<ArrayList<Recipe>> {
+        val recipes = try {
             val newRecipes = repoApi.getRecipesList()
             newRecipes.recipes.forEach {
                 it.lastUpdated = convertUnixToTime(it.lastUpdated.toLong())
             }
-            Result.Success(newRecipes.recipes)
+            kotlin.Result.success(newRecipes.recipes as ArrayList<Recipe>)
         } catch (e: Exception) {
             Log.d("Error while get recipes", e.message.toString())
-            Result.Error("Api problem")
+            kotlin.Result.failure<Exception>(e)
         }
-        return recipes
+        return recipes as kotlin.Result<ArrayList<Recipe>>
     }
 
     override suspend fun getRecipeInfo(uuid: String): Result<RecipeDetails> {

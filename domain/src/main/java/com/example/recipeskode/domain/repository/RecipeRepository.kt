@@ -5,7 +5,7 @@ import com.example.recipeskode.domain.entity.Recipe
 import com.example.recipeskode.domain.entity.RecipeDetails
 
 interface RecipeRepository {
-    suspend fun getRecipeList(): Result<List<Recipe>>
+    suspend fun getRecipeList(): kotlin.Result<ArrayList<Recipe>>
     suspend fun getRecipeInfo(uuid: String): Result<RecipeDetails>
     fun saveImage(byteArray: ByteArray): Boolean
 }

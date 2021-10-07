@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
@@ -53,18 +54,43 @@ class RecipePhotoFragment : Fragment(R.layout.fragment_recipe_photo) {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                ActivityCompat.requestPermissions(
-                    requireActivity(),
+                requestPermissions(
                     arrayOf(
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ), 2
+                    ), 1
                 )
             } else {
                 viewModel.saveImage(bitmap)
+                Toast.makeText(requireContext(), "Photo saved", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             //ошибка
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            1 -> {
+                if (grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    if ((ActivityCompat.checkSelfPermission(
+                            requireContext(),
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED)
+                    ) {
+                        viewModel.saveImage(binding.imageSavePhoto.drawable.toBitmap())
+                        Toast.makeText(requireContext(), "Photo saved", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }
