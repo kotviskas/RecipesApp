@@ -1,6 +1,5 @@
 package com.example.recipeskode.domain.usecase
 
-import com.example.recipeskode.domain.base.Result
 import com.example.recipeskode.domain.base.SuspendUseCase
 import com.example.recipeskode.domain.entity.RecipeDetails
 import com.example.recipeskode.domain.repository.RecipeRepository

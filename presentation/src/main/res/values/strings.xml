@@ -16,4 +16,6 @@
     <string name="instruction">Instruction:</string>
     <string name="difficulty">Difficulty:</string>
     <string name="refresh">refresh</string>
+    <string name="saved">Photo saved</string>
+    <string name="permission_denied">Permission Denied</string>
 </resources>

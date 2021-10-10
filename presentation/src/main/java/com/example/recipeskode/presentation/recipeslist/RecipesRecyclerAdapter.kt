@@ -3,7 +3,6 @@ package com.example.recipeskode.presentation.recipeslist
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.recipeskode.domain.base.Result
 import com.example.recipeskode.domain.entity.Recipe
 import com.example.recipeskode.presentation.databinding.RecipeItemLayoutBinding
 import com.squareup.picasso.Picasso

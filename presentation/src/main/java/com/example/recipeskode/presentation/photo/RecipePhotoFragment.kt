@@ -62,7 +62,7 @@ class RecipePhotoFragment : Fragment(R.layout.fragment_recipe_photo) {
                 )
             } else {
                 viewModel.saveImage(bitmap)
-                Toast.makeText(requireContext(), "Photo saved", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.saved), Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             //ошибка
@@ -85,10 +85,10 @@ class RecipePhotoFragment : Fragment(R.layout.fragment_recipe_photo) {
                         ) == PackageManager.PERMISSION_GRANTED)
                     ) {
                         viewModel.saveImage(binding.imageSavePhoto.drawable.toBitmap())
-                        Toast.makeText(requireContext(), "Photo saved", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(R.string.saved), Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
                 }
             }
         }

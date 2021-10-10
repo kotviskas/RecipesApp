@@ -74,18 +74,19 @@ class RecipeListViewModel(
     private suspend fun getRecipeListSafeCall() {
         if (hasInternetConnection(application)) {
             val result = getRecipeListUseCase.invoke(GetRecipeListParams())
-            result.onFailure {
-                _apiError.call()
-                isError = true
-            }
-            result.onSuccess {
-                recipesList = result.getOrDefault(ArrayList())
-                _recipes.value = recipesList
-                if (isError) {
-                    _noError.call()
-                    isError = false
+            result
+                .onFailure {
+                    _apiError.call()
+                    isError = true
                 }
-            }
+                .onSuccess {
+                    recipesList = result.getOrDefault(ArrayList())
+                    _recipes.value = recipesList
+                    if (isError) {
+                        _noError.call()
+                        isError = false
+                    }
+                }
         } else {
             _internetError.call()
             isError = true

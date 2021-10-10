@@ -8,7 +8,6 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import com.example.recipeskode.data.network.RecipeRepoApi
-import com.example.recipeskode.domain.base.Result
 import com.example.recipeskode.domain.entity.Recipe
 import com.example.recipeskode.domain.entity.RecipeDetails
 import com.example.recipeskode.domain.repository.RecipeRepository
@@ -28,12 +27,12 @@ class RecipeRepositoryImpl(private val repoApi: RecipeRepoApi, private val conte
             newRecipes.recipes.forEach {
                 it.lastUpdated = convertUnixToTime(it.lastUpdated.toLong())
             }
-            kotlin.Result.success(newRecipes.recipes as ArrayList<Recipe>)
+            Result.success(newRecipes.recipes as ArrayList<Recipe>)
         } catch (e: Exception) {
             Log.d("Error while get recipes", e.message.toString())
-            kotlin.Result.failure<Exception>(e)
+            Result.failure<Exception>(e)
         }
-        return recipes as kotlin.Result<ArrayList<Recipe>>
+        return recipes as Result<ArrayList<Recipe>>
     }
 
     override suspend fun getRecipeInfo(uuid: String): Result<RecipeDetails> {
@@ -41,12 +40,12 @@ class RecipeRepositoryImpl(private val repoApi: RecipeRepoApi, private val conte
             val newRecipe = repoApi.getRecipe(uuid)
             newRecipe.recipe.instructions = newRecipe.recipe.instructions.replace("<br>", "\n")
             newRecipe.recipe.lastUpdated = convertUnixToTime(newRecipe.recipe.lastUpdated.toLong())
-            Result.Success(newRecipe.recipe)
+            Result.success(newRecipe.recipe)
         } catch (e: java.lang.Exception) {
             Log.d("Error while get recipe", e.message.toString())
-            Result.Error("Api problem")
+            Result.failure<Exception>(e)
         }
-        return recipe
+        return recipe as Result<RecipeDetails>
     }
 
     override fun saveImage(byteArray: ByteArray): Boolean {

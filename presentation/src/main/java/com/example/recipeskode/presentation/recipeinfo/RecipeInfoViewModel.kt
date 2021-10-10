@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.recipeskode.domain.base.Result
 import com.example.recipeskode.domain.entity.RecipeDetails
 import com.example.recipeskode.domain.usecase.GetRecipeInfoParams
 import com.example.recipeskode.domain.usecase.GetRecipeInfoUseCaseSuspend
@@ -46,21 +45,20 @@ class RecipeInfoViewModel(
 
     private suspend fun getRecipeSafeCall(uuid: String): RecipeDetails? {
         if (hasInternetConnection(application)) {
-            when (val result = getRecipeInfoUseCaseSuspend.invoke(GetRecipeInfoParams(uuid))) {
-                is Result.Error -> {
+            val result = getRecipeInfoUseCaseSuspend.invoke(GetRecipeInfoParams(uuid))
+            result
+                .onFailure {
                     _apiError.call()
                     isError = true
                 }
-                else -> {
-                    if (result.data != null) {
-                        if (isError) {
-                            _noError.call()
-                            isError = false
-                        }
-                        return result.data
+                .onSuccess {
+                    if (isError) {
+                        _noError.call()
+                        isError = false
                     }
+                    return result.getOrNull()
                 }
-            }
+
         } else {
             _internetError.call()
             isError = true
