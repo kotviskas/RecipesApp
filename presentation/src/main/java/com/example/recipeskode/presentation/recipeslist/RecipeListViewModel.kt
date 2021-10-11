@@ -4,11 +4,8 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.recipeskode.domain.base.Result
 import com.example.recipeskode.domain.base.SortOptions
 import com.example.recipeskode.domain.entity.Recipe
-import com.example.recipeskode.domain.usecase.CheckInternetConnectionParams
-import com.example.recipeskode.domain.usecase.CheckInternetConnectionUseCase
 import com.example.recipeskode.domain.usecase.GetRecipeListParams
 import com.example.recipeskode.domain.usecase.GetRecipeListUseCaseSuspend
 import com.example.recipeskode.presentation.base.BaseViewModel
@@ -16,7 +13,6 @@ import kotlinx.coroutines.launch
 
 class RecipeListViewModel(
     private val getRecipeListUseCase: GetRecipeListUseCaseSuspend,
-    private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase,
     private val application: Application
 ) : BaseViewModel() {
 
@@ -39,10 +35,6 @@ class RecipeListViewModel(
 
     fun setOptionByDate() {
         sortOption = SortOptions.BY_DATE
-    }
-
-    private fun hasInternetConnection(): Boolean {
-        return checkInternetConnectionUseCase.invoke(CheckInternetConnectionParams(application))
     }
 
     fun getRecipeList() {
@@ -80,25 +72,21 @@ class RecipeListViewModel(
     }
 
     private suspend fun getRecipeListSafeCall() {
-        if (hasInternetConnection()) {
-            when (val result = getRecipeListUseCase.invoke(GetRecipeListParams())) {
-                is Result.Error -> {
+        if (hasInternetConnection(application)) {
+            val result = getRecipeListUseCase.invoke(GetRecipeListParams())
+            result
+                .onFailure {
                     _apiError.call()
                     isError = true
                 }
-                else -> {
-                    if (result.data != null) {
-                        recipesList = result.data!!
-                        _recipes.value = recipesList
-                        if (isError) {
-                            _noError.call()
-                            isError = false
-                        }
-
+                .onSuccess {
+                    recipesList = result.getOrDefault(ArrayList())
+                    _recipes.value = recipesList
+                    if (isError) {
+                        _noError.call()
+                        isError = false
                     }
                 }
-            }
-
         } else {
             _internetError.call()
             isError = true
